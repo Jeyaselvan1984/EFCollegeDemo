@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace EFCollege
 {
@@ -52,7 +54,7 @@ namespace EFCollege
         public Student studentId { get; set; }
         public Course courseId { get; set; }
     }
-    class contextClass : DbContext
+    public class contextClass : DbContext
     {
             public DbSet<Teacher> TeacherSet { get; set; }
 
@@ -66,11 +68,10 @@ namespace EFCollege
                 //For single column primary key
                 entity.HasKey(e => e.Id);
                 //MultiColumn Composite key
-                entity.HasKey(e => new { e.Id, e.Major });
-                entity.HasOne(e => e.ApplicantProfiles)
-    .WithMany(p => p.ApplicantEducation)
-    .HasForeignKey(e => e.Applicant);
-                entity.Property(e => e.TimeStamp).IsRowVersion();
+                //entity.HasKey(e => new { e.Id, e.Major });
+                entity.HasMany(e => e.CourseList)
+    .WithOne(p => p.TeacherRecord);
+               // entity.Property(e => e.TimeStamp).IsRowVersion();
                 //Alternatively in Poco class use //[NotMapped]
             });
             base.OnModelCreating(modelBuilder);
@@ -83,7 +84,7 @@ namespace EFCollege
 
 
     }
-    class Program<T> where T : class
+    public class Program<T> where T : class
     {
         private contextClass _context;
         public Program()
@@ -155,4 +156,4 @@ namespace EFCollege
             Console.WriteLine("Hello World!");
         }
     }
-}
+
